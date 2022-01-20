@@ -51,7 +51,6 @@ import 'script-loader!angular-websocket/dist/angular-websocket';
 import './app.less';
 import './css/source.scss';
 /* eslint-enable import/no-webpack-loader-syntax, import/no-unresolved, import/extensions */
-
 import get from 'lodash/get';
 import has from 'lodash/has';
 import set from 'lodash/set';
@@ -347,6 +346,7 @@ export default (containerEl, environment) => {
         });
 
         $state.defaultErrorHandler((error) => {
+          console.log('ZM:: error', error);
           if (error.type === RejectType.ERROR && !error.handled) {
             $rootScope.$emit('ovh::sidebar::hide');
             $state.go(
