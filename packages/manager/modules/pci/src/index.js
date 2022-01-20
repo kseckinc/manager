@@ -34,6 +34,8 @@ import template from './template.html';
 
 import sidebar from './projects/project/sidebar';
 
+import provider from './provider';
+
 import './index.scss';
 
 import {
@@ -79,6 +81,7 @@ angular
     'ovhManagerBanner',
     region,
   ])
+  .provider('OvhManagerPci', provider)
   .config(
     /* @ngInject */ ($stateProvider) => {
       $stateProvider.state('pci', {
@@ -87,6 +90,7 @@ angular
         template,
         resolve: {
           me: /* @ngInject */ (coreConfig) => coreConfig.getUser(),
+          shellClient: /**/ (OvhManagerPci) => OvhManagerPci.getShellClient(),
         },
       });
     },

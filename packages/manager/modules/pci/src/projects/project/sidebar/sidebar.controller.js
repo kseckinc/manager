@@ -38,10 +38,6 @@ export default class SidebarController {
 
     this.REGION = coreConfig.getRegion();
     this.UNIVERSE = UNIVERSE;
-
-    this.CONFIG_MENU = getMenu({
-      DBAAS_LOGS_URL: coreURLBuilder.buildURL('dedicated', '#/dbaas/logs'),
-    });
   }
 
   toggleProjectsList() {
@@ -79,36 +75,44 @@ export default class SidebarController {
   }
 
   $onInit() {
-    const featuresName = this.findFeatureToCheck();
-    this.ovhFeatureFlipping
-      .checkFeatureAvailability(featuresName)
-      .then((features) => {
-        const isItemAvailable = (regions, feature) =>
-          (isNil(regions) || this.coreConfig.isRegion(regions)) &&
-          (!feature || features.isFeatureAvailable(feature));
+    this.shellClient.navigation
+      .getURL('dedicated', '#/dbaas/logs')
+      .then((dbaasLogUrl) => {
+        this.CONFIG_MENU = getMenu({
+          DBAAS_LOGS_URL: dbaasLogUrl,
+        });
 
-        this.MENU = this.CONFIG_MENU.filter(({ regions, feature }) =>
-          isItemAvailable(regions, feature),
-        ).map((menu) => {
-          set(
-            menu,
-            'subitems',
-            menu.subitems.filter(({ regions, feature }) =>
+        const featuresName = this.findFeatureToCheck();
+        this.ovhFeatureFlipping
+          .checkFeatureAvailability(featuresName)
+          .then((features) => {
+            const isItemAvailable = (regions, feature) =>
+              (isNil(regions) || this.coreConfig.isRegion(regions)) &&
+              (!feature || features.isFeatureAvailable(feature));
+
+            this.MENU = this.CONFIG_MENU.filter(({ regions, feature }) =>
               isItemAvailable(regions, feature),
-            ),
-          );
-          return menu;
+            ).map((menu) => {
+              set(
+                menu,
+                'subitems',
+                menu.subitems.filter(({ regions, feature }) =>
+                  isItemAvailable(regions, feature),
+                ),
+              );
+              return menu;
+            });
+          });
+        let currentProjectId = this.$stateParams.projectId;
+        this.setProject(this.$stateParams.projectId);
+        this.$transitions.onSuccess({}, () => {
+          if (currentProjectId !== this.$stateParams.projectId) {
+            this.setProject(this.$stateParams.projectId);
+            currentProjectId = this.$stateParams.projectId;
+          }
+          this.isDisplayingProjectsList = false;
         });
       });
-    let currentProjectId = this.$stateParams.projectId;
-    this.setProject(this.$stateParams.projectId);
-    this.$transitions.onSuccess({}, () => {
-      if (currentProjectId !== this.$stateParams.projectId) {
-        this.setProject(this.$stateParams.projectId);
-        currentProjectId = this.$stateParams.projectId;
-      }
-      this.isDisplayingProjectsList = false;
-    });
   }
 
   onMenuItemClick({ id }) {

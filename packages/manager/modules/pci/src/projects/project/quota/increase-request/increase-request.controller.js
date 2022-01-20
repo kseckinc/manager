@@ -27,11 +27,8 @@ export default class PciProjectQuotaIncreaseController {
     this.issueTypeFieldsStr = get(this.issueType, 'fields', [])
       .map((issueType) => get(issueType, 'label'))
       .join('\n\n');
-    this.supportUrl = this.coreURLBuilder.buildURL('dedicated', '#/support');
-    this.billingUrl = this.coreURLBuilder.buildURL(
-      'dedicated',
-      '#/billing/history',
-    );
+    this.supportUrl = this.buildedUrls.support;
+    this.billingUrl = this.buildedUrls.billingHistory;
     this.serviceOptions = this.serviceOptions.map((serviceOption) => ({
       ...serviceOption,
       formattedName: `${this.$translate.instant(

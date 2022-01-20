@@ -11,6 +11,7 @@ export default /* @ngInject */ function(
   guideUrl,
   OvhApiCloud,
   OvhApiCloudProjectServiceInfos,
+  shellClient,
 ) {
   const self = this;
   const serviceName = $stateParams.projectId;
@@ -99,15 +100,14 @@ export default /* @ngInject */ function(
 
   self.openContacts = function openContacts() {
     if (self.canChangeContacts()) {
-      const redirectURL = coreURLBuilder.buildURL(
-        'dedicated',
-        '#/contacts/services',
-        {
+      shellClient.navigation
+        .getURL('dedicated', '#/contacts/services', {
           tab: 'SERVICES',
           serviceName,
-        },
-      );
-      $window.open(redirectURL, '_blank');
+        })
+        .then((redirectURL) => {
+          $window.open(redirectURL, '_blank');
+        });
     }
   };
 

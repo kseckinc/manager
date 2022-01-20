@@ -13,5 +13,6 @@ export default {
     onListParamChange: '<',
     getStateName: '<',
     goToRegion: '<',
+    buildedUrls: '<',
   },
 };

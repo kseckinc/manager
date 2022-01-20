@@ -21,25 +21,32 @@ export default /* @ngInject */ ($stateProvider) => {
       ) =>
         PciProjectsProjectInstanceService.getInstancePrice(projectId, instance),
 
-      reverseDnsLink: /* @ngInject */ (coreURLBuilder) =>
-        coreURLBuilder.buildURL('dedicated', '#/configuration/ip'),
+      reverseDnsLink: /* @ngInject */ (buildedUrl) => buildedUrl.ipSection,
 
-      ipMitigationLink: /* @ngInject */ (instance, coreURLBuilder) => {
+      ipMitigationLink: /* @ngInject */ (instance, shellClient) => {
         const ip = get(head(instance.publicIpV4), 'ip');
-        return coreURLBuilder.buildURL('dedicated', '#/configuration/ip', {
-          action: 'mitigation',
-          ip,
-          ipBlock: ip,
-        });
+        return shellClient.navigation.getURL(
+          'dedicated',
+          '#/configuration/ip',
+          {
+            action: 'mitigation',
+            ip,
+            ipBlock: ip,
+          },
+        );
       },
 
-      firewallLink: /* @ngInject */ (instance, coreURLBuilder) => {
+      firewallLink: /* @ngInject */ (instance, shellClient) => {
         const ip = get(head(instance.publicIpV4), 'ip');
-        return coreURLBuilder.buildURL('dedicated', '#/configuration/ip', {
-          action: 'toggleFirewall',
-          ip,
-          ipBlock: ip,
-        });
+        return shellClient.navigation.getURL(
+          'dedicated',
+          '#/configuration/ip',
+          {
+            action: 'toggleFirewall',
+            ip,
+            ipBlock: ip,
+          },
+        );
       },
 
       breadcrumb: /* @ngInject */ (instance) => instance.name,

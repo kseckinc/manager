@@ -112,35 +112,44 @@ export default /* @ngInject */ ($stateProvider) => {
       },
       monthHistory: /* @ngInject */ (
         catalog,
-        coreURLBuilder,
+        shellClient,
         currentMonthHistory,
         historyDetails,
         projectId,
-      ) => ({
-        ...currentMonthHistory,
-        priceByPlanFamily: currentMonthHistory?.priceByPlanFamily?.map(
-          (price) => ({
-            ...price,
-            details: formatBillingDetails(
-              historyDetails,
-              price.planFamily,
-              catalog,
-              currentMonthHistory.price,
-            ).map((detail) => {
-              const url = getURL(price.planFamily, detail.planCode);
-              return {
-                ...detail,
-                url: url
-                  ? coreURLBuilder.buildURL('public-cloud', `#${url}`, {
-                      serviceName: projectId,
-                      id: detail.serviceId,
-                    })
-                  : null,
-              };
-            }),
-          }),
-        ),
-      }),
+      ) =>
+        Promise.resolve().then(async () => ({
+          ...currentMonthHistory,
+          priceByPlanFamily: await Promise.all(
+            (currentMonthHistory?.priceByPlanFamily || []).map(
+              async (price) => ({
+                ...price,
+                details: await Promise.all(
+                  formatBillingDetails(
+                    historyDetails,
+                    price.planFamily,
+                    catalog,
+                    currentMonthHistory.price,
+                  ).map(async (detail) => {
+                    const url = getURL(price.planFamily, detail.planCode);
+                    return {
+                      ...detail,
+                      url: await (url
+                        ? shellClient.navigation.getURL(
+                            'public-cloud',
+                            `#${url}`,
+                            {
+                              serviceName: projectId,
+                              id: detail.serviceId,
+                            },
+                          )
+                        : Promise.resolve(null)),
+                    };
+                  }),
+                ),
+              }),
+            ),
+          ),
+        })),
       historyDetails: /* @ngInject */ (
         $q,
         $http,

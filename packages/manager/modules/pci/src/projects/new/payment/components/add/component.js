@@ -10,5 +10,6 @@ export default {
     globalLoading: '<',
     model: '<',
     registerablePaymentMethods: '<',
+    urls: '<',
   },
 };

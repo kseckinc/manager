@@ -19,7 +19,6 @@ export default class PciProjectNewPaymentCtrl {
     $q,
     $window,
     coreConfig,
-    coreURLBuilder,
     CucCloudMessage,
     pciProjectNew,
     PciProjectsService,
@@ -31,7 +30,6 @@ export default class PciProjectNewPaymentCtrl {
     this.$q = $q;
     this.$window = $window;
     this.coreConfig = coreConfig;
-    this.coreURLBuilder = coreURLBuilder;
     this.CucCloudMessage = CucCloudMessage;
     this.pciProjectNew = pciProjectNew;
     this.PciProjectsService = PciProjectsService;
@@ -39,13 +37,6 @@ export default class PciProjectNewPaymentCtrl {
     this.OVH_PAYMENT_METHOD_INTEGRATION_TYPE = OVH_PAYMENT_METHOD_INTEGRATION_TYPE;
 
     // other attributes
-    [
-      this.paymentMethodUrl,
-      this.paymentMethodAddUrl,
-    ] = coreURLBuilder.buildURLs([
-      { application: 'dedicated', path: '#/billing/payment/method' },
-      { application: 'dedicated', path: '#/billing/payment/method/add' },
-    ]);
     this.integrationSubmitFn = null;
 
     this.message = {
@@ -120,7 +111,7 @@ export default class PciProjectNewPaymentCtrl {
     (validatingStep?.history || []).forEach(({ label }) => {
       if ([FRAUD_MANUAL_REVIEW, FRAUD_DOCS_REQUESTED].includes(label)) {
         this.trackPage('antifraud-verification');
-        this.orderBillingUrl = this.buildOrderBillingUrl(order);
+        this.orderBillingUrl = order.orderBillingUrl;
         this.needToCheckCustomerInformations = true;
         this.displayCucCloudMessage('warning', label.toLowerCase());
       }
@@ -143,7 +134,7 @@ export default class PciProjectNewPaymentCtrl {
   }
 
   buildOrderBillingUrl({ orderId }) {
-    return this.coreURLBuilder.buildURL(
+    return this.shellClient.navigation.getURL(
       'dedicated',
       '#/billing/orders/:orderId',
       {
@@ -228,9 +219,12 @@ export default class PciProjectNewPaymentCtrl {
       })
       .then((order) => {
         if (order?.orderId) {
-          return this.$q((resolve) =>
-            this.startAntiFraudChecker(resolve, order),
-          ).then(() => this.onCartFinalized(order));
+          return this.buildOrderBillingUrl(order).then((orderBillingUrl) => {
+            Object.assign(order, { orderBillingUrl });
+            return this.$q((resolve) =>
+              this.startAntiFraudChecker(resolve, order),
+            ).then(() => this.onCartFinalized(order));
+          });
         }
 
         return null;
@@ -425,6 +419,9 @@ export default class PciProjectNewPaymentCtrl {
         onMessage: () => this.refreshMessages(),
       },
     );
+
+    this.paymentMethodUrl = this.buildedUrls.payment;
+    this.paymentMethodAddUrl = this.buildedUrls.paymentSectionHref;
 
     // check if addPayment status is in URL
     // and no paymentMethod needs to be added

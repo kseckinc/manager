@@ -13,10 +13,10 @@ export default class ProjectCreatingNotPaidCtrl {
     this.loading = {
       cancel: false,
     };
+  }
 
-    this.orderUrl = coreURLBuilder.buildURL('dedicated', '#/billing/orders', {
-      status: 'all',
-    });
+  $onInit() {
+    this.orderUrl = this.buildedUrls.allOrders;
   }
 
   onCancelProjectBtnClick() {

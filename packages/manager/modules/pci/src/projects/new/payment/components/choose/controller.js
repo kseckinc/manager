@@ -1,10 +1,11 @@
 export default class PciProjectNewPaymentChooseCtrl {
   /* @ngInject */
-  constructor(coreConfig, coreURLBuilder) {
+  constructor() {
     this.useNewPaymentMethod = false;
-    this.myServiceUrl = coreConfig.isRegion(['EU', 'CA'])
-      ? coreURLBuilder.buildURL('dedicated', '#/billing/autoRenew')
-      : '';
+  }
+
+  $onInit() {
+    this.myServiceUrl = this.buildedUrls.myServiceUrl;
   }
 
   /*= =============================

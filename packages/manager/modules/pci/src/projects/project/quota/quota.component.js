@@ -12,6 +12,7 @@ export default {
     increaseQuotaLink: '<',
     getStateName: '<',
     goToRegion: '<',
+    buildedUrls: '<',
   },
   controller,
   template,

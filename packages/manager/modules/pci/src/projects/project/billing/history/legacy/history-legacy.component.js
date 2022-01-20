@@ -4,6 +4,7 @@ import template from './history-legacy.html';
 export default {
   bindings: {
     validParams: '<',
+    buildedUrls: '<',
   },
   controller,
   template,

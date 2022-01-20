@@ -13,6 +13,7 @@ export default {
     goToProjects: '<',
     goToProjectInactive: '<',
     goToRegion: '<',
+    shellClient: '<',
   },
   controller,
   template,

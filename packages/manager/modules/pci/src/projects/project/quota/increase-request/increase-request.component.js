@@ -10,5 +10,6 @@ export default {
     projectId: '<',
     region: '<',
     serviceOptions: '<',
+    buildedUrls: '<',
   },
 };

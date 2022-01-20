@@ -8,6 +8,7 @@ export default {
     goToProjectInactive: '<',
     isOpen: '<',
     onClick: '&',
+    shellClient: '<',
   },
   controller,
   template,

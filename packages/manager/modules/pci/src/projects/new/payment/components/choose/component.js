@@ -11,5 +11,6 @@ export default {
     eligibility: '<',
     globalLoading: '<',
     model: '<',
+    urls: '<',
   },
 };

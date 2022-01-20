@@ -96,8 +96,11 @@ export default /* @ngInject */ ($stateProvider) => {
         }),
       vRack: /* @ngInject */ (DatabaseService, projectId) =>
         DatabaseService.getVRack(projectId),
-      vRackLink: /* @ngInject */ (vRack, coreURLBuilder) => {
-        return coreURLBuilder.buildURL('dedicated', `#/vrack/${vRack.id}`);
+      vRackLink: /* @ngInject */ (vRack, shellClient) => {
+        return shellClient.navigation.getURL(
+          'dedicated',
+          `#/vrack/${vRack.id}`,
+        );
       },
       goBack: /* @ngInject */ (database, goToDatabase) => (message, type) =>
         goToDatabase(database, message, type),

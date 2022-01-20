@@ -16,11 +16,6 @@ export default class PciProjectNewPaymentMethodAddCtrl {
 
     // other attributes
     this.authorizedPaymentMethods = null;
-
-    this.paymentSectionHref = coreURLBuilder.buildURL(
-      'dedicated',
-      '#/billing/payment/method/add',
-    );
   }
 
   /* ==============================
@@ -100,6 +95,8 @@ export default class PciProjectNewPaymentMethodAddCtrl {
         return methodAIndex - methodBIndex;
       },
     );
+
+    this.paymentSectionHref = this.buildedUrls.paymentSectionHref;
 
     // set payment method model
     this.model.paymentMethod = this.eligibility.isAddPaymentMethodRequired()

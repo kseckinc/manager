@@ -98,6 +98,11 @@ export default async (containerEl, shellClient) => {
     .controller('PublicCloudController', controller)
     .service('publicCloud', service)
     .config(
+      /* @ngInject */ (OvhManagerPciProvider) => {
+        OvhManagerPciProvider.setShellClient(shellClient);
+      },
+    )
+    .config(
       /* @ngInject */ ($locationProvider) => $locationProvider.hashPrefix(''),
     )
     .config(
@@ -143,6 +148,7 @@ export default async (containerEl, shellClient) => {
         $state.defaultErrorHandler((error) => {
           if (error.type === RejectType.ERROR) {
             $rootScope.$emit('ovh::sidebar::hide');
+            console.log(error);
             $state.go(
               'pci.error',
               {

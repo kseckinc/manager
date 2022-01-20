@@ -81,8 +81,7 @@ export default /* @ngInject */ ($stateProvider) => {
           }),
         ),
 
-      billingUrl: (coreURLBuilder) =>
-        coreURLBuilder.buildURL('dedicated', '#/billing/history'),
+      billingUrl: (buildedUrls) => buildedUrls.billingHistory,
 
       terminateProject: /* @ngInject */ (OvhApiCloudProject) => (project) =>
         OvhApiCloudProject.v6().delete({ serviceName: project.serviceName })
@@ -109,6 +108,66 @@ export default /* @ngInject */ ($stateProvider) => {
           name: hit,
           type: 'action',
         });
+      },
+
+      buildedUrls: /* @ngInject */ (coreConfig, shellClient) => {
+        return Promise.all([
+          shellClient.navigation.getURL(
+            'dedicated',
+            '#/billing/payment/method/add',
+          ),
+          shellClient.navigation.getURL(
+            'dedicated',
+            '#/billing/payment/method',
+          ),
+          shellClient.navigation.getURL('dedicated', '#/billing/history'),
+          shellClient.navigation.getURL('dedicated', '#/billing/orders', {
+            status: 'all',
+          }),
+          shellClient.navigation.getURL('dedicated', '#/useraccount/dashboard'),
+          shellClient.navigation.getURL('dedicated', '#/support'),
+          ...[
+            coreConfig.isRegion(['EU', 'CA'])
+              ? shellClient.navigation.getURL(
+                  'dedicated',
+                  '#/billing/autoRenew',
+                )
+              : Promise.resolve(''),
+          ],
+          ...[
+            coreConfig.isRegion(['EU', 'CA'])
+              ? shellClient.navigation.getURL(
+                  'dedicated',
+                  '#/support/tickets/new',
+                )
+              : Promise.resolve(''),
+          ],
+          shellClient.navigation.getURL('dedicated', '#/configuration/ip'),
+        ]).then(
+          ([
+            paymentSectionHref,
+            payment,
+            billingHistory,
+            allOrders,
+            myAccount,
+            support,
+            myServiceUrl,
+            newTicket,
+            ipSection,
+          ]) => {
+            return {
+              paymentSectionHref,
+              payment,
+              billingHistory,
+              allOrders,
+              myAccount,
+              support,
+              myServiceUrl,
+              newTicket,
+              ipSection,
+            };
+          },
+        );
       },
     },
   });

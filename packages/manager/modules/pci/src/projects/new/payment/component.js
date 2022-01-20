@@ -22,5 +22,7 @@ export default {
     paymentStatus: '<',
     trackPage: '<',
     sendTrack: '<',
+    urls: '<',
+    shellClient: '<',
   },
 };

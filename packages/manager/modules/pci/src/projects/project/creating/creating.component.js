@@ -11,5 +11,6 @@ export default {
     projects: '<',
     projectOrderStatus: '<',
     onProjectCreated: '<',
+    buildedUrls: '<',
   },
 };

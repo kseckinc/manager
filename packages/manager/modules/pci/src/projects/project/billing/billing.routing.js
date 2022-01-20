@@ -21,7 +21,7 @@ export default /* @ngInject */ ($stateProvider) => {
         $http,
         catalog,
         consumptionDetails,
-        coreURLBuilder,
+        shellClient,
         isLegacyProject,
         projectId,
         serviceInfos,
@@ -31,27 +31,33 @@ export default /* @ngInject */ ($stateProvider) => {
           ? $http
               .get(`/services/${serviceInfos.serviceId}/consumption`)
               .then(({ data }) => data)
-              .then((consumption) => ({
+              .then(async (consumption) => ({
                 ...consumption,
-                priceByPlanFamily: consumption.priceByPlanFamily.map(
-                  (price) => {
-                    const details = formatBillingDetails(
-                      consumptionDetails,
-                      price.planFamily,
-                      catalog,
-                      consumption.price,
-                    ).map((detail) => {
-                      const url = getURL(price.planFamily, detail.planCode);
-                      return {
-                        ...detail,
-                        url: url
-                          ? coreURLBuilder.buildURL('public-cloud', `#${url}`, {
-                              serviceName: projectId,
-                              id: detail.serviceId,
-                            })
-                          : null,
-                      };
-                    });
+                priceByPlanFamily: await Promise.all(
+                  consumption.priceByPlanFamily.map(async (price) => {
+                    const details = await Promise.all(
+                      formatBillingDetails(
+                        consumptionDetails,
+                        price.planFamily,
+                        catalog,
+                        consumption.price,
+                      ).map(async (detail) => {
+                        const url = getURL(price.planFamily, detail.planCode);
+                        return {
+                          ...detail,
+                          url: await (url
+                            ? shellClient.navigation.getURL(
+                                'public-cloud',
+                                `#${url}`,
+                                {
+                                  serviceName: projectId,
+                                  id: detail.serviceId,
+                                },
+                              )
+                            : Promise.resolve(null)),
+                        };
+                      }),
+                    );
                     const sortedByPrice = sortBy(details, (detail) =>
                       sumBy(
                         details.filter(({ id }) => id === detail.id),
@@ -66,7 +72,7 @@ export default /* @ngInject */ ($stateProvider) => {
                           : `${element.planCode}-${element.uniqueId}`,
                       ),
                     };
-                  },
+                  }),
                 ),
               }))
               .catch(() => ({

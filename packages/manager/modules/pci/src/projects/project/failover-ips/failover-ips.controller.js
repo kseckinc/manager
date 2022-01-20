@@ -7,7 +7,6 @@ export default class FailoverIpController {
   constructor(
     $state,
     $translate,
-    coreURLBuilder,
     CucCloudMessage,
     OvhApiCloudProjectIpFailover,
   ) {
@@ -15,14 +14,11 @@ export default class FailoverIpController {
     this.$translate = $translate;
     this.CucCloudMessage = CucCloudMessage;
     this.OvhApiCloudProjectIpFailover = OvhApiCloudProjectIpFailover;
-
-    this.DEDICATED_IPS_URL = coreURLBuilder.buildURL(
-      'dedicated',
-      '#/configuration/ip',
-    );
   }
 
   $onInit() {
+    this.DEDICATED_IPS_URL = this.buildedUrls.ipSection;
+
     this.messageHandler = this.CucCloudMessage.subscribe(
       MESSAGES_CONTAINER_NAME,
       {

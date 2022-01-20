@@ -19,9 +19,7 @@ export default /* @ngInject */ ($stateProvider) => {
     redirectTo: (transition) => {
       const translatePromise = transition.injector().getAsync('$translate');
       const windowPromise = transition.injector().getAsync('$window');
-      const coreURLBuilderPromise = transition
-        .injector()
-        .getAsync('coreURLBuilder');
+      const buildedUrlsPromise = transition.injector().getAsync('buildedUrls');
       const cartPromise = transition.injector().getAsync('cart');
       const eligibilityPromise = transition.injector().getAsync('eligibility');
       const newSupportTicketLink = transition
@@ -32,8 +30,8 @@ export default /* @ngInject */ ($stateProvider) => {
         windowPromise,
         cartPromise,
         eligibilityPromise,
-        coreURLBuilderPromise,
-      ]).then(([$translate, $window, cart, eligibility, coreURLBuilder]) => {
+        buildedUrlsPromise,
+      ]).then(([$translate, $window, cart, eligibility, buildedUrls]) => {
         let redirectState = 'pci.projects.new.config';
         let redirectParams = transition.params();
         const redirectOptions = {
@@ -58,10 +56,7 @@ export default /* @ngInject */ ($stateProvider) => {
           redirectState = 'pci.error';
           redirectParams = {
             message: $translate.instant('pci_project_new_error_verify_paypal', {
-              href: coreURLBuilder.buildURL(
-                'dedicated',
-                '#/billing/payment/method',
-              ),
+              href: buildedUrls.payment,
             }),
             code: ELIGIBILITY_ACTION_ENUM.VERIFY_PAYPAL,
             image: ELIGIBILITY_ERROR_IMAGES_SRC.VERIFY_PAYPAL,
@@ -89,10 +84,8 @@ export default /* @ngInject */ ($stateProvider) => {
     resolve: {
       breadcrumb: () => null,
 
-      newSupportTicketLink: /* @ngInject */ (coreConfig, coreURLBuilder) =>
-        coreConfig.isRegion(['EU', 'CA'])
-          ? coreURLBuilder.buildURL('dedicated', '#/support/tickets/new')
-          : '',
+      newSupportTicketLink: /* @ngInject */ (buildedUrls) =>
+        buildedUrls.newTicket,
 
       cart: /* @ngInject */ ($transition$, me, pciProjectNew) =>
         !get($transition$.params(), 'cartId')

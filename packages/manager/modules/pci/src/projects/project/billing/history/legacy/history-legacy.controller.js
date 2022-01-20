@@ -11,7 +11,6 @@ export default class {
     $state,
     $stateParams,
     $translate,
-    coreURLBuilder,
     CloudProjectBilling,
     CucCloudMessage,
     OvhApiCloudProjectUsageCurrent,
@@ -37,7 +36,6 @@ export default class {
     // End - Messages Management
 
     this.firstDayCurrentMonth = moment().startOf('month');
-    this.billingUrl = coreURLBuilder.buildURL('dedicated', '#/billing/history');
 
     this.loading = true;
   }
@@ -56,6 +54,8 @@ export default class {
 
     this.year = this.validParams.year;
     this.month = this.validParams.month;
+
+    this.billingUrl = this.buildedUrls.billingHistory;
 
     return this.initConsumptionHistory()
       .catch((err) => {

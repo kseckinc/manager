@@ -26,8 +26,7 @@ export default /* @ngInject */ ($stateProvider) => {
       hasDefaultPaymentMethod: (ovhPaymentMethod) =>
         ovhPaymentMethod.hasDefaultPaymentMethod(),
 
-      paymentMethodUrl: /* @ngInject */ (coreURLBuilder) =>
-        coreURLBuilder.buildURL('dedicated', '#/billing/payment/method'),
+      paymentMethodUrl: /* @ngInject */ (buildedUrls) => buildedUrls.payment,
 
       goToDeploy: ($state, CucCloudMessage, projectId) => (
         message = false,

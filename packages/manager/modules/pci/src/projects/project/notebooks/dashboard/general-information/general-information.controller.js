@@ -23,10 +23,11 @@ export default class {
     this.NOTEBOOK_VOLUME_TYPE = NOTEBOOK_VOLUME_TYPE;
     this.NOTEBOOK_FLAVOR_TYPE = NOTEBOOK_FLAVOR_TYPE;
     this.NOTEBOOK_MULTIPLY_SIGN = NOTEBOOK_MULTIPLY_SIGN;
-    this.billingUrl = coreURLBuilder.buildURL('dedicated', '#/billing/history');
   }
 
   $onInit() {
+    this.billingUrl = this.buildedUrls.billingHistory;
+
     this.messageContainer =
       'pci.projects.project.notebooks.dashboard.general-information';
     this.loadMessages();

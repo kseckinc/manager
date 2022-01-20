@@ -27,10 +27,8 @@ export default class {
 
     this.loadMessages();
 
-    [this.paymentmeanUrl, this.supportUrl] = this.coreURLBuilder.buildURLs([
-      { application: 'dedicated', path: '#/billing/mean' },
-      { application: 'dedicated', path: '#/support' },
-    ]);
+    this.paymentmeanUrl = this.buildedUrls.payment;
+    this.supportUrl = this.buildedUrls.support;
 
     this.model = {
       autoScaling: !this.project.manualQuota,

@@ -20,11 +20,6 @@ export default class PciProjectNewPaymentRegisterCtrl {
       chunks: null,
       list: null,
     };
-
-    this.paymentSectionHref = coreURLBuilder.buildURL(
-      'dedicated',
-      '#/billing/payment/method/add',
-    );
   }
 
   /* ==============================
@@ -111,6 +106,8 @@ export default class PciProjectNewPaymentRegisterCtrl {
     this.model.paymentMethod = this.eligibility.isAddPaymentMethodRequired()
       ? head(this.authorizedPaymentMethods.list)
       : null;
+
+    this.paymentSectionHref = this.buildedUrls.paymentSectionHref;
   }
 
   /* -----  End of Hooks  ------ */
