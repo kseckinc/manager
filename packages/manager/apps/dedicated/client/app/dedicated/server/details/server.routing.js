@@ -2,6 +2,7 @@ import { DedicatedServer } from '@ovh-ux/manager-models';
 import { SERVICE_TYPE } from './server.constants';
 
 import Ola from '../interfaces/ola.class';
+import { getShellClient } from '../../../shell';
 
 export default /* @ngInject */ ($stateProvider) => {
   $stateProvider.state('app.dedicated-server.server', {
@@ -78,6 +79,19 @@ export default /* @ngInject */ ($stateProvider) => {
 
       bringYourOwnImage: /* @ngInject */ ($stateParams, Server) =>
         Server.getBringYourOwnImage($stateParams.productId).catch(() => null),
+
+      buildedUrls: () => {
+        return Promise.all([
+          getShellClient().navigation.getURL(
+            'dedicated',
+            '#/billing/autoRenew',
+          ),
+          getShellClient().navigation.getURL('dedicated', '#/support'),
+        ]).then(([billingAutoRenew, support]) => ({
+          billingAutoRenew,
+          support,
+        }));
+      },
     },
   });
 };

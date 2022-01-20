@@ -85,12 +85,7 @@ angular.module('App').controller(
     /**
      *  Load NAS
      */
-    async $onInit() {
-      this.redirectToCloud = await getShellClient().navigation.getURL(
-        'dedicated',
-        '#/paas/nasha/:nashaId/partitions',
-        { nashaId: this.nasData.nas.serviceName },
-      );
+    $onInit() {
       this.managePoll(); // who is poll ? :-P
 
       this.loaders.nas = true;
@@ -100,6 +95,16 @@ angular.module('App').controller(
           this.loaders.nas = false;
           this.urlRenew = this.Nas.getUrlRenew(this.$stateParams.nasId);
           this.nasData.monitoring.enabled = currentNas.monitored;
+
+          getShellClient()
+            .navigation.getURL(
+              'dedicated',
+              '#/paas/nasha/:nashaId/partitions',
+              { nashaId: this.nasData.nas.serviceName },
+            )
+            .then((redirectToCloud) => {
+              this.redirectToCloud = redirectToCloud;
+            });
         },
         (data) => {
           this.loaders.nas = false;

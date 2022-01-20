@@ -1,6 +1,6 @@
 import { getShellClient } from '../../../shell';
 
-export default /* @ngInject */ async function UserAccountEmailsController(
+export default /* @ngInject */ function UserAccountEmailsController(
   $q,
   $location,
   $scope,
@@ -9,11 +9,6 @@ export default /* @ngInject */ async function UserAccountEmailsController(
   Alerter,
 ) {
   const self = this;
-
-  $scope.SUPPORT_URL = await getShellClient().navigation.getURL(
-    'dedicated',
-    '#/support',
-  );
 
   $scope.itemsPerPage = 10;
   $scope.currentPage =
@@ -31,7 +26,12 @@ export default /* @ngInject */ async function UserAccountEmailsController(
       detail: [],
     };
 
-    $scope.getEmailIds();
+    getShellClient()
+      .navigation.getURL('dedicated', '#/support')
+      .then((supportUrl) => {
+        $scope.SUPPORT_URL = supportUrl;
+        $scope.getEmailIds();
+      });
   };
 
   $scope.getEmailIds = (refresh) => {

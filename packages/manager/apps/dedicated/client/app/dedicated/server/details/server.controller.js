@@ -6,8 +6,6 @@ import isArray from 'lodash/isArray';
 import isEmpty from 'lodash/isEmpty';
 import set from 'lodash/set';
 
-import { getShellClient } from '../../../shell';
-
 import {
   NO_AUTORENEW_COUNTRIES,
   BYOI_STARTING_MESSAGE,
@@ -49,10 +47,7 @@ export default class ServerCtrl {
   async $onInit() {
     this.errorStatus = ['customer_error', 'ovh_error', 'error', 'cancelled'];
 
-    this.$scope.RENEW_URL = await getShellClient().navigation.getURL(
-      'dedicated',
-      '#/billing/autoRenew',
-    );
+    this.$scope.RENEW_URL = this.buildedUrls.billingAutoRenew;
 
     this.$scope.$state = this.$state;
 

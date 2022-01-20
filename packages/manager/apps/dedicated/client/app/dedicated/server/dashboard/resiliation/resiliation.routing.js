@@ -1,5 +1,4 @@
 import { BillingService as Service } from '@ovh-ux/manager-models';
-import set from 'lodash/set';
 
 import { getShellClient } from '../../../../shell';
 
@@ -74,14 +73,10 @@ export default /* @ngInject */ ($stateProvider) => {
         coreURLBuilder,
         serviceName,
       ) => () => {
-        return getShellClient()
-          .navigation.getURL(
-            'dedicated',
-            `#/billing/autorenew/delete?serviceId=${serviceName}`,
-          )
-          .then((deleteUrl) => {
-            set($window.location, 'href', deleteUrl);
-          });
+        return getShellClient().navigation.navigateTo(
+          'dedicated',
+          `#/billing/autorenew/delete?serviceId=${serviceName}`,
+        );
       },
       serviceId: /* @ngInject */ (serviceInfos) => serviceInfos.serviceId,
       serviceName: /* @ngInject */ ($transition$) =>

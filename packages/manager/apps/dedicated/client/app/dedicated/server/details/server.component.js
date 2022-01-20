@@ -13,6 +13,7 @@ export default {
     worldPart: '<',
     bringYourOwnImage: '<',
     resiliationCapability: '<',
+    buildedUrls: '<',
   },
   controller,
   template,
