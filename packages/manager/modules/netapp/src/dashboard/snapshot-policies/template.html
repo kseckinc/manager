@@ -5,14 +5,19 @@
     ></h1>
     <p data-translate="netapp_snapshot_policies_information"></p>
 
-    <oui-button
-        class="float-left oui-button_icon-left"
-        icon-left="oui-icon-plus"
-        variant="secondary"
-        on-click="$ctrl.goToCreateSnapshotPolicies()"
+    <oui-action-menu
+        class="float-left"
+        text="{{:: 'netapp_snapshot_policies_actions' | translate }}"
     >
-        <span data-translate="netapp_snapshot_policies_create"></span>
-    </oui-button>
+        <oui-action-menu-item
+            aria-label="{{:: 'netapp_snapshot_policies_actions_create_label' | translate }}"
+            on-click="$ctrl.goToCreateSnapshotPolicies()"
+        >
+            <span
+                data-translate="netapp_snapshot_policies_actions_create"
+            ></span>
+        </oui-action-menu-item>
+    </oui-action-menu>
     <snapshot-policies
         policies="$ctrl.snapshotPolicies"
         on-delete="$ctrl.onDelete(snapshotPolicy)"
