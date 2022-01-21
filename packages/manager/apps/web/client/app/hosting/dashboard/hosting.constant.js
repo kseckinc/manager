@@ -46,4 +46,9 @@ angular
     OK: 'ok',
     CHECK: 'check',
     DOING: 'doing',
+  })
+  .constant('DETACH_DEFAULT_SETTINGS', {
+    durationCode: 'P12M',
+    durationText: '12m',
+    pricingMode: 'default',
   });

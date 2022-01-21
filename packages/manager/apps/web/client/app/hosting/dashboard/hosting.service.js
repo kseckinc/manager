@@ -30,6 +30,7 @@ import union from 'lodash/union';
         HOSTING,
         HOSTING_UPGRADES,
         HOSTING_OPERATION_STATUS,
+        DETACH_DEFAULT_SETTINGS,
         OvhHttp,
         Poll,
       ) {
@@ -42,6 +43,7 @@ import union from 'lodash/union';
         this.HOSTING = HOSTING;
         this.HOSTING_UPGRADES = HOSTING_UPGRADES;
         this.HOSTING_OPERATION_STATUS = HOSTING_OPERATION_STATUS;
+        this.DETACH_DEFAULT_SETTINGS = DETACH_DEFAULT_SETTINGS;
         this.OvhHttp = OvhHttp;
         this.Poll = Poll;
 
@@ -445,8 +447,8 @@ import union from 'lodash/union';
       }
 
       /**
-       * Get available offers
-       * @param {string} domain
+       * Get available plans to detach a hosting
+       * @param {string} serviceId
        */
       getAvailablePlanDetach(serviceId) {
         return this.$http
@@ -455,29 +457,30 @@ import union from 'lodash/union';
       }
 
       /**
-       * Get available offers
-       * @param {string} domain
+       * Get estimation for detach hosting operation
+       * @param {string} serviceId
+       * @param {string} planCode
        */
       simulateEstimate(serviceId, planCode) {
         return this.$http
           .post(`/services/${serviceId}/detach/${planCode}/simulate`, {
             addons: [
               {
-                duration: 'P12M',
+                duration: this.DETACH_DEFAULT_SETTINGS.durationCode,
                 planCode,
-                pricingMode: 'default',
+                pricingMode: this.DETACH_DEFAULT_SETTINGS.pricingMode,
                 quantity: 1,
                 serviceId,
               },
             ],
-            duration: 'P12M',
-            pricingMode: 'default',
+            duration: this.DETACH_DEFAULT_SETTINGS.durationCode,
+            pricingMode: this.DETACH_DEFAULT_SETTINGS.pricingMode,
             quantity: 1,
           })
           .then(({ data }) => {
             const durationsTab = [];
             const details = angular.copy(data.order);
-            details.duration = 'P12M';
+            details.duration = this.DETACH_DEFAULT_SETTINGS.durationText;
             durationsTab.push(details);
 
             return durationsTab;
@@ -485,8 +488,9 @@ import union from 'lodash/union';
       }
 
       /**
-       * Get available offers
-       * @param {string} domain
+       * Execute detach hosting operation
+       * @param {string} serviceId
+       * @param {string} planCode
        */
       executeDetach(serviceId, planCode) {
         return this.$http

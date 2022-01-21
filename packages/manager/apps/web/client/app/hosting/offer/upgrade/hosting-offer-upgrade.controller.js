@@ -1,3 +1,9 @@
+import get from 'lodash/get';
+import {
+  OFFERS_NAME_MAPPING,
+  DETACH_OFFERS,
+} from './hosting-offer-upgrade.constants';
+
 angular.module('App').controller(
   'HostingUpgradeOfferCtrl',
   class HostingUpgradeOfferCtrl {
@@ -53,17 +59,7 @@ angular.module('App').controller(
       this.Hosting.getSelected(this.productId)
         .then((hosting) => {
           this.hosting = hosting;
-          return this.Hosting.getServiceInfos(this.productId);
-        })
-        .then(({ serviceId }) => {
-          this.serviceId = serviceId;
-          return this.Hosting.getAvailablePlanDetach(serviceId);
-        })
-        .then((availableOffers) => {
-          this.availableOffers = availableOffers.map((offer) => ({
-            name: offer.planCode,
-            value: offer.planCode,
-          }));
+          return this.getAvailableOptions(this.productId);
         })
         .catch(() => {
           this.availableOffers = [];
@@ -73,6 +69,78 @@ angular.module('App').controller(
         });
     }
 
+    isDetach() {
+      if (DETACH_OFFERS.includes(this.hosting.offer)) {
+        return true;
+      }
+      return false;
+    }
+
+    getAvailableOptions(productId) {
+      if (this.isDetach()) {
+        return this.Hosting.getServiceInfos(productId)
+          .then(({ serviceId }) => {
+            this.serviceId = serviceId;
+            return this.Hosting.getAvailablePlanDetach(serviceId);
+          })
+          .then((availableOffers) => {
+            this.availableOffers = availableOffers.map((offer) => ({
+              name: this.$translate.instant(
+                `hosting_dashboard_service_offer_${
+                  OFFERS_NAME_MAPPING[offer.planCode]
+                }`,
+              ),
+              value: offer.planCode,
+            }));
+          });
+      }
+
+      return this.Hosting.getAvailableOffer(this.productId).then(
+        (availableOffers) => {
+          this.availableOffers = availableOffers.map((offer) => ({
+            name: this.$translate.instant(
+              `hosting_dashboard_service_offer_${offer}`,
+            ),
+            value: offer,
+          }));
+        },
+      );
+    }
+
+    getPrices() {
+      if (this.isDetach()) {
+        return this.Hosting.simulateEstimate(
+          this.serviceId,
+          this.model.offer.value,
+        );
+      }
+
+      return this.Hosting.getUpgradePrices(
+        get(this.hosting, 'serviceName', this.$stateParams.productId),
+        this.model.offer.value,
+      );
+    }
+
+    executeOrder() {
+      if (this.isDetach()) {
+        return this.Hosting.executeDetach(
+          this.serviceId,
+          this.model.offer.value,
+        );
+      }
+
+      const startTime = moment(this.model.startTime, 'HH:mm:ss')
+        .utc()
+        .format('HH:mm:ss');
+
+      return this.Hosting.orderUpgrade(
+        get(this.hosting, 'serviceName', this.$stateParams.productId),
+        this.model.offer.value,
+        this.model.duration.duration,
+        this.hosting.isCloudWeb ? startTime : null,
+      );
+    }
+
     getDurations() {
       this.durations = {
         available: [],
@@ -80,7 +148,7 @@ angular.module('App').controller(
       };
       this.loading.durations = true;
 
-      return this.Hosting.simulateEstimate(this.serviceId, 'perso2014')
+      return this.getPrices()
         .then((durations) => {
           this.durations.available = durations;
           if (durations.length === 1) {
@@ -130,9 +198,8 @@ angular.module('App').controller(
       win.referrer = null;
       win.opener = null;
 
-      return this.Hosting.executeDetach(this.serviceId, 'perso2014')
+      return this.executeOrder()
         .then((order) => {
-          console.log(order);
           this.Alerter.success(
             this.$translate.instant('hosting_order_upgrade_success', {
               t0: order.url,
